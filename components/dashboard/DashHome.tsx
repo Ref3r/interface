@@ -4,9 +4,32 @@ import Image from "next/image";
 import Link from "next/link";
 import DashHomeInfuencers from "../cards/DashHomeInfuencers";
 import CardsProductForBrands from "../cards/CardsProductForBrands";
+import { checkUserType } from "@/appwrite/utils";
+import appwriteService from "@/appwrite/config";
+import { useTestName } from "@/store";
 
 const DashHome = () => {
+  const key = "0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A";
+  const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const name = useTestName((state) => state.name);
+  async function updateData(key: string) {
+    const userType = await checkUserType(key);
+    if (userType == "brand") {
+      const data = await appwriteService.getBrandData(key);
+      console.log(data);
+      setData(data);
+    }
+    if (userType == "influencer") {
+      const data = await appwriteService.getInfluencerData(key);
+      console.log(data);
+      setData(data);
+    }
+  }
+
+  useEffect(() => {
+    updateData(key);
+  }, []);
 
   if (loading == true) return <>Fetching....</>;
 
@@ -47,13 +70,12 @@ const DashHome = () => {
                 </div>
               </div>
 
-              <p className="text-white text-2xl font-medium">Brand Name</p>
+              <p className="text-white text-2xl font-medium">
+                {data ? name : "Name"}
+              </p>
 
               <p className="text-[#909090]">
-                Lorem ipsum dolor sit amet consectetur. Lectus scelerisque ac
-                sollicitudin nibh consequat neque senectus quis. Volutpat
-                pulvinar id sed lacus ut. Duis amet porttitor quisque nunc arcu.
-                Sit a gravida faucibus amet libero non.
+                {data ? data.documents[0].description : "Description"}
               </p>
 
               <div className="flex items-center gap-8 bg-[#232528] py-2 px-6 rounded-full w-fit">
@@ -102,17 +124,32 @@ const DashHome = () => {
                 <p>View all products &#62;</p>
               </div>
               <div className="flex gap-4 flex-wrap">
-                <CardsProductForBrands image={"Product1.svg"} name="Yamaha Bike" />
-                <CardsProductForBrands image={"Product2.svg"} name="Yamaha Bike" />
-                <CardsProductForBrands image={"Product3.svg"} name="Yamaha Bike" />
-                <CardsProductForBrands image={"Product4.svg"} name="Yamaha Bike" />
-                <CardsProductForBrands image={"Product1.svg"} name="Yamaha Bike" />
+                <CardsProductForBrands
+                  image={"Product1.svg"}
+                  name="Yamaha Bike"
+                />
+                <CardsProductForBrands
+                  image={"Product2.svg"}
+                  name="Yamaha Bike"
+                />
+                <CardsProductForBrands
+                  image={"Product3.svg"}
+                  name="Yamaha Bike"
+                />
+                <CardsProductForBrands
+                  image={"Product4.svg"}
+                  name="Yamaha Bike"
+                />
+                <CardsProductForBrands
+                  image={"Product1.svg"}
+                  name="Yamaha Bike"
+                />
                 {/* <CardsProductForBrands image={"Product1.svg"} name="Yamaha Bike" /> */}
               </div>
             </div>
           </div>
 
-          <div className="w-[25%] h-full"> 
+          <div className="w-[25%] h-full">
             <Image
               src={`/TotalSales.svg`}
               width="425"
