@@ -3,28 +3,51 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import DashHomeInfuencers from "../cards/DashHomeInfuencers";
+import CardsInfluencersForBrands from "../cards/CardsInfluencersForBrands";
 import CardsProductForBrands from "../cards/CardsProductForBrands";
 import { checkUserType } from "@/appwrite/utils";
 import appwriteService from "@/appwrite/config";
-import { useTestName } from "@/store";
+import {
+  useBrandData,
+  useInfluencerData,
+  useIsInfluencer,
+  usePublicKey,
+} from "@/store";
 
 const DashHome = () => {
-  const key = "0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A";
+  const isInfluencer = useIsInfluencer((state) => state.isInfluencer);
+  console.log(isInfluencer);
+  const key = usePublicKey.getState().publicKey;
   const [data, setData] = useState();
+  const [name, setName] = useState<string>();
+  const [userDescription, setUserDescription] = useState<string>();
   const [loading, setLoading] = useState(false);
-  const name = useTestName((state) => state.name);
+  const [allBrands, setAllBrands] = useState();
+  const [allInfluencers, setAllInfluencers] = useState();
+  const [currentUserDocumentId, setCurrentUserDocumentId] = useState<string>();
+
+  const description = useBrandData((state) => state.description);
   async function updateData(key: string) {
     const userType = await checkUserType(key);
     if (userType == "brand") {
-      const data = await appwriteService.getBrandData(key);
-      console.log(data);
-      setData(data);
+      setName(useBrandData.getState().name);
+      setUserDescription(useBrandData.getState().description);
+      setCurrentUserDocumentId(useBrandData.getState().documentId);
     }
     if (userType == "influencer") {
-      const data = await appwriteService.getInfluencerData(key);
-      console.log(data);
-      setData(data);
+      setName(useInfluencerData.getState().name);
+      setUserDescription(useInfluencerData.getState().bio);
+      setCurrentUserDocumentId(useInfluencerData.getState().documentId);
     }
+
+    console.log(currentUserDocumentId);
+
+    const allBrands = await appwriteService.getAllBrands();
+    setAllBrands(allBrands);
+    //console.log(allBrands.documents[0].$collectionId);
+    const allInfluencers = await appwriteService.getAllInfluencers();
+    setAllInfluencers(allInfluencers);
+    //console.log(allInfluencers);
   }
 
   useEffect(() => {
@@ -70,12 +93,16 @@ const DashHome = () => {
                 </div>
               </div>
 
+              {/* <p className="text-white text-2xl font-medium">
+                {data ? data.documents[0].name : "Name"}
+              </p> */}
+
               <p className="text-white text-2xl font-medium">
-                {data ? name : "Name"}
+                {key ? name : "Name"}
               </p>
 
               <p className="text-[#909090]">
-                {data ? data.documents[0].description : "Description"}
+                {key ? userDescription : "Description"}
               </p>
 
               <div className="flex items-center gap-8 bg-[#232528] py-2 px-6 rounded-full w-fit">
@@ -171,13 +198,43 @@ const DashHome = () => {
             <p>View other profiles &#62;</p>
           </div>
           <div className="flex gap-6 flex-wrap">
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Rishi" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Rahul" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Sahil" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Sagar" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Kunj" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Mayank" />
-            <DashHomeInfuencers image={`Influencer1.svg`} name="Prakhar" />
+            {!isInfluencer &&
+              allInfluencers &&
+              (allInfluencers ? (
+                allInfluencers.documents.length > 0 ? (
+                  allInfluencers.documents.map((e) => (
+                    <DashHomeInfuencers
+                      image={`Influencer1.svg`}
+                      name={e.name}
+                      currentUserDocumentId={currentUserDocumentId}
+                      cardDocumentId={e.$id}
+                      cardUserKey={e.key}
+                    />
+                  ))
+                ) : (
+                  <p>No influencers found.</p>
+                )
+              ) : (
+                <p>Invalid data format for influencers.</p>
+              ))}
+            {isInfluencer &&
+              allBrands &&
+              (allInfluencers ? (
+                allBrands.documents.length > 0 ? (
+                  allBrands.documents.map((e) => (
+                    <DashHomeInfuencers
+                      image={`Influencer1.svg`}
+                      name={e.name}
+                      currentUserDocumentId={currentUserDocumentId}
+                      cardDocumentId={e.$collectionId}
+                    />
+                  ))
+                ) : (
+                  <p>No influencers found.</p>
+                )
+              ) : (
+                <p>Invalid data format for influencers.</p>
+              ))}
           </div>
         </div>
       </div>

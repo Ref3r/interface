@@ -108,6 +108,54 @@ export class AppwriteService {
       console.log("logout error" + error);
     }
   }
+
+  async getAllBrands() {
+    try {
+      return database.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteBrandId
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async getAllInfluencers() {
+    try {
+      return database.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteInfluencerId
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async updateBrandConnection(collectionID: string, connections: string) {
+    try {
+      return database.updateDocument(
+        conf.appwriteDatabaseId,
+
+        conf.appwriteBrandId,
+        collectionID,
+        { connections }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async updateInfluencerConnection(collectionID: string, connections: string) {
+    try {
+      return database.updateDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteInfluencerId,
+        collectionID,
+        { connections }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 
 const appwriteService = new AppwriteService();
