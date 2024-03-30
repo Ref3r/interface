@@ -2,9 +2,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import InfluencerSetup2 from "./InfluencerSetup2";
+import { useInfluencerData } from "@/store";
 
 function InfluencerSetup1() {
   const [choose, setChoose] = useState(true);
+  const [name, setName] = useState<string>();
+  const [bio, setBio] = useState<string>();
+  function updateStore() {
+    useInfluencerData.setState({
+      name: name,
+      bio: bio,
+    });
+  }
   return (
     <>
       <div
@@ -38,6 +47,10 @@ function InfluencerSetup1() {
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Your Name</label>
               <input
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
                 type="text"
                 id="event-name"
                 placeholder="Name"
@@ -48,6 +61,10 @@ function InfluencerSetup1() {
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Your Bio</label>
               <textarea
+                value={bio}
+                onChange={(e) => {
+                  setBio(e.target.value);
+                }}
                 placeholder="Description..."
                 rows={4}
                 className="bg-[#27292D] rounded-xl p-2 outline-none resize-none"
@@ -57,6 +74,7 @@ function InfluencerSetup1() {
               className="bg-[#00B24F] px-4 py-2 text-[0.8rem] text-white rounded-2xl md:rounded-lg w-[30%]"
               onClick={() => {
                 setChoose(false);
+                updateStore();
               }}
             >
               Save Details

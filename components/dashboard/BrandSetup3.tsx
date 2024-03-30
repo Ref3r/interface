@@ -2,9 +2,24 @@
 import { useState } from "react";
 import Image from "next/image";
 import DashboardComponent from "./DashboardComponent";
+import Dashboard from "@/app/dashboard/page";
+import { useBrandData } from "@/store";
+import { createBrand } from "../../appwrite/utils";
 
 function BrandSetup3() {
   const [choose, setChoose] = useState(true);
+  const [brandEcommercePlatform, setBrandEcommercePlatform] =
+    useState<string>();
+  const [brandApiKey, setBrandApiKey] = useState<string>();
+  const [brandIndustryCategory, setBrandIndustryCategory] = useState<string>();
+  function updateStore() {
+    useBrandData.setState({
+      ecommerce_platform: brandEcommercePlatform,
+      api_key: brandApiKey,
+      industry: brandIndustryCategory,
+    });
+    console.log("store Updated 1");
+  }
   return (
     <>
       <div
@@ -20,6 +35,10 @@ function BrandSetup3() {
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Your Ecommerce Platform</label>
               <input
+                value={brandEcommercePlatform}
+                onChange={(e) => {
+                  setBrandEcommercePlatform(e.target.value);
+                }}
                 type="text"
                 id="event-name"
                 //   placeholder="Name"
@@ -30,6 +49,10 @@ function BrandSetup3() {
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Enter your API key from store</label>
               <textarea
+                value={brandApiKey}
+                onChange={(e) => {
+                  setBrandApiKey(e.target.value);
+                }}
                 //   placeholder="Description..."
                 className="bg-[#27292D] rounded-xl p-2 outline-none resize-none"
               />
@@ -38,6 +61,10 @@ function BrandSetup3() {
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Industry Category</label>
               <input
+                value={brandIndustryCategory}
+                onChange={(e) => {
+                  setBrandIndustryCategory(e.target.value);
+                }}
                 type="text"
                 id="event-name"
                 //   placeholder="Link"
@@ -47,6 +74,8 @@ function BrandSetup3() {
             <button
               className="bg-[#00B24F] px-4 py-2 text-white rounded-xl w-[30%]"
               onClick={() => {
+                updateStore();
+                createBrand();
                 setChoose(false);
               }}
             >

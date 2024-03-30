@@ -6,63 +6,74 @@ import Link from "next/link";
 import BrandSetup1 from "@/components/dashboard/BrandSetup1";
 import InfluencerSetup1 from "@/components/dashboard/InfluencerSetup1";
 import DashboardComponent from "@/components/dashboard/DashboardComponent";
+import {
+  useBrandData,
+  useInfluencerData,
+  useIsInfluencer,
+  usePublicKey,
+} from "@/store";
 
 function Dashboard() {
-  const [key, setKey] = useState("0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A");
+  const key = usePublicKey.getState().publicKey;
   const [choose, setChoose] = useState(true);
   const [brand, setBrand] = useState(false);
   const [influencer, setInfluencer] = useState(false);
   const [isUserExist, setIsUserExist] = useState(false);
-  const [influencerData, setInfluencerData] = useState({
-    key: "0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A",
-    name: "a",
-    bio: "abc",
-    links: `{insta_link:"xyz",facebook_link:"xyz"}`,
-    niche: "none",
-    main_platform: "ph",
-    follower_count: 10,
-  });
-  const [brandData, setBrandData] = useState({
-    key: "0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A",
-    name: "Brandx",
-    description: "brand x description",
-    website: "",
-    address: "",
-    business_reg_code: "",
-    links: "{}",
-    exommerce_platform: "",
-    api_key: "",
-    industry: "",
-    profile_img: "",
-  });
-
-  function createInfluencer(influencerData: any) {
-    appwriteService.createInfluencer(influencerData);
-  }
 
   async function getInfluencerData(key: string) {
     const data = await appwriteService.getInfluencerData(key);
     return data;
-    console.log(data);
-  }
-
-  async function createBrand(brandData: any) {
-    const data = await appwriteService.createBrand(brandData);
-    console.log(data);
   }
 
   async function getBrandData(key: string) {
     const data = await appwriteService.getBrandData(key);
     return data;
-    console.log(data);
   }
 
   async function checkUserSetup(key: string) {
-    const isBrand = await getBrandData(key);
-    console.log(isBrand.total);
-    const isInfluencer = await getInfluencerData(key);
-    console.log(isInfluencer);
-    if (isBrand.total || isInfluencer.total) {
+    const brandData = await getBrandData(key);
+    if (brandData.total) {
+      console.log("brand data", brandData);
+      useIsInfluencer.setState({
+        isInfluencer: false,
+      });
+      useBrandData.setState({
+        documentId: brandData.documents[0].$id,
+        key: brandData.documents[0].key,
+        name: brandData.documents[0].name,
+        description: brandData.documents[0].description,
+        website: brandData.documents[0].website,
+        address: brandData.documents[0].address,
+        business_reg_code: brandData.documents[0].business_reg_code,
+        links: brandData.documents[0].links,
+        ecommerce_platform: brandData.documents[0].ecommerce_platform,
+        api_key: brandData.documents[0].api_key,
+        industry: brandData.documents[0].industry,
+        profile_img: brandData.documents[0].profile_img,
+        connections: brandData.documents[0].connections,
+      });
+    }
+
+    const influencerData = await getInfluencerData(key);
+    if (influencerData.total) {
+      console.log(influencerData);
+      useIsInfluencer.setState({
+        isInfluencer: true,
+      });
+      useInfluencerData.setState({
+        documentId: influencerData.documents[0].$id,
+        key: influencerData.documents[0].key,
+        name: influencerData.documents[0].name,
+        bio: influencerData.documents[0].bio,
+        links: influencerData.documents[0].links,
+        niche: influencerData.documents[0].niche,
+        main_platform: influencerData.documents[0].main_platform,
+        follower_count: influencerData.documents[0].follower_count,
+        connections: influencerData.documents[0].connections,
+      });
+    }
+
+    if (brandData.total || influencerData.total) {
       return true;
     }
   }
@@ -73,7 +84,7 @@ function Dashboard() {
       console.log(user);
       if (user) {
         setIsUserExist(true);
-        // router.push("/dashboard");
+        //router.push("/dashboard");
       }
     };
     userCheck();
@@ -90,14 +101,6 @@ function Dashboard() {
               choose ? "flex" : "hidden"
             }`}
           >
-            <button
-              onClick={() => {
-                createBrand(brandData);
-              }}
-            >
-              create influencer
-            </button>
-
             <button
               onClick={() => {
                 getBrandData("0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A");

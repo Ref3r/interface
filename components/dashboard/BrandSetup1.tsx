@@ -2,10 +2,26 @@
 import { useState } from "react";
 import Image from "next/image";
 import BrandSetup2 from "./BrandSetup2";
+import { useBrandData } from "@/store";
 
 function BrandSetup1() {
   const [choose, setChoose] = useState(true);
-  
+  const [brandName, setBrandName] = useState<string>();
+  const [brandDescription, setBrandDescription] = useState<string>();
+  const [brandWebsite, setBrandWebsite] = useState<string>();
+  const [brandAddress, setBrandAddress] = useState<string>();
+  const [brandRegistrationCode, setBrandRegistrationCode] = useState<string>();
+  function updateStore() {
+    useBrandData.setState({
+      name: brandName,
+      description: brandDescription,
+      website: brandWebsite,
+      address: brandAddress,
+      business_reg_code: brandRegistrationCode,
+    });
+    console.log("store Updated 1");
+  }
+
   return (
     <>
       <div
@@ -43,15 +59,23 @@ function BrandSetup1() {
                 id="event-name"
                 placeholder="Name"
                 className="bg-[#27292D] rounded-xl p-2 outline-none"
+                value={brandName}
+                onChange={(e) => {
+                  setBrandName(e.target.value);
+                }}
               />
             </div>
 
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Brand Description</label>
               <textarea
+                value={brandDescription}
                 placeholder="Description..."
                 rows={4}
                 className="bg-[#27292D] rounded-xl p-2 resize-none outline-none"
+                onChange={(e) => {
+                  setBrandDescription(e.target.value);
+                }}
               />
             </div>
 
@@ -62,12 +86,20 @@ function BrandSetup1() {
                 id="event-name"
                 placeholder="Link"
                 className="bg-[#27292D] rounded-xl p-2 outline-none"
+                value={brandWebsite}
+                onChange={(e) => {
+                  setBrandWebsite(e.target.value);
+                }}
               />
             </div>
 
             <div className="flex flex-col w-[70%]">
               <label className="mb-2">Address (Optional)</label>
               <input
+                value={brandAddress}
+                onChange={(e) => {
+                  setBrandAddress(e.target.value);
+                }}
                 type="text"
                 id="event-name"
                 placeholder="Address"
@@ -80,6 +112,10 @@ function BrandSetup1() {
                 Business Registration Code (Optional)
               </label>
               <input
+                value={brandRegistrationCode}
+                onChange={(e) => {
+                  setBrandRegistrationCode(e.target.value);
+                }}
                 type="text"
                 id="event-name"
                 placeholder="Code"
@@ -90,6 +126,7 @@ function BrandSetup1() {
               className="bg-[#00B24F] px-4 py-2 text-[0.8rem] text-white rounded-2xl md:rounded-lg w-[30%]"
               onClick={() => {
                 setChoose(false);
+                updateStore();
               }}
             >
               Save Details
