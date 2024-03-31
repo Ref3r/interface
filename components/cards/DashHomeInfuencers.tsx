@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useBrandData, useInfluencerData, usePublicKey } from "@/store";
 import { checkUserType } from "@/appwrite/utils";
 import appwriteService from "@/appwrite/config";
+import { useRouter } from "next/navigation";
+import Chat from "../chat/Chat";
 
 const DashHomeInfuencers = ({
   image,
@@ -21,6 +23,7 @@ const DashHomeInfuencers = ({
   //console.log(currentUserDocumentId);
   //console.log(cardDocumentId);
   //console.log(name);
+  const router = useRouter();
   const [isConnected, setIsconnected] = useState(false);
   const currentUserKey = usePublicKey.getState().publicKey;
   async function fetchCurrentUserConnections(key: string) {
@@ -100,7 +103,9 @@ const DashHomeInfuencers = ({
       {isConnected ? (
         <button
           onClick={() => {
-            updateConnections();
+            //updateConnections();
+            router.push("/dashboard/chat/jkg");
+            
           }}
           className="rounded bg-[#00B24F] text-white px-2 py-1 text-sm"
         >
