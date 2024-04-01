@@ -11,7 +11,7 @@ const Items = ({
 }) => {
   return (
     <div
-      className={`items-center py-2 px-10 gap-2 flex text-sm rounded-3xl font-medium ${
+      className={`items-center py-1 px-10 gap-2 flex text-sm rounded-3xl font-medium ${
         isActive ? "bg-[#00B24F] text-white" : "bg-[#909090] text-black"
       } `}
     >

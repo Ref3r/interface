@@ -1,4 +1,7 @@
+"use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import Hero from "@/components/landing/HeroSection";
 import Features from "@/components/landing/FeaturesSection";
@@ -6,6 +9,7 @@ import OfferSection from "@/components/landing/OfferSection";
 import HowItWorks from "@/components/landing/HowItWorks";
 
 export default function Home() {
+  
   return (
     <main className="bg-[#111111] flex min-h-screen flex-col items-center justify-between">
       <div
@@ -13,6 +17,7 @@ export default function Home() {
         style={{ backgroundImage: "url('/hero-bg.svg')" }}
       >
         <LandingNavbar />
+
         <Hero />
       </div>
       <div
@@ -28,7 +33,7 @@ export default function Home() {
         <OfferSection />
       </div>
       <div>
-        <HowItWorks/>
+        <HowItWorks />
       </div>
     </main>
   );

@@ -1,11 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useBrandData, useInfluencerData, usePublicKey } from "@/store";
+import {
+  useBrandData,
+  useInfluencerData,
+  useIsInfluencer,
+  usePublicKey,
+} from "@/store";
 import { checkUserType } from "@/appwrite/utils";
 import appwriteService from "@/appwrite/config";
 import { useRouter } from "next/navigation";
-import Chat from "../chat/Chat";
 
 const DashHomeInfuencers = ({
   image,
@@ -23,6 +27,7 @@ const DashHomeInfuencers = ({
   //console.log(currentUserDocumentId);
   //console.log(cardDocumentId);
   //console.log(name);
+  console.log(cardUserKey);
   const router = useRouter();
   const [isConnected, setIsconnected] = useState(false);
   const currentUserKey = usePublicKey.getState().publicKey;
@@ -75,7 +80,7 @@ const DashHomeInfuencers = ({
       const connections = useBrandData.getState().connections;
       console.log(connections);
       console.log(cardUserKey);
-      if (connections.includes(cardUserKey)) {
+      if (connections?.includes(cardUserKey)) {
         setIsconnected(true);
       }
     }
@@ -83,7 +88,8 @@ const DashHomeInfuencers = ({
       const connections = useInfluencerData.getState().connections;
       console.log(connections);
       console.log(cardUserKey);
-      if (connections.includes(cardUserKey)) {
+      if (connections?.includes(cardUserKey)) {
+        console.log("user connection status", isConnected);
         setIsconnected(true);
       }
     }
@@ -103,9 +109,17 @@ const DashHomeInfuencers = ({
       {isConnected ? (
         <button
           onClick={() => {
-            //updateConnections();
-            router.push("/dashboard/chat/jkg");
-            
+            if (useIsInfluencer.getState().isInfluencer) {
+              router.push(
+                `/chat/${currentUserKey}-${cardUserKey}-${currentUserKey}`
+              );
+              //  router.push("/chat/"+cardUserKey+currentUserKey);
+            }
+            if (!useIsInfluencer.getState().isInfluencer) {
+              router.push(
+                `/chat/${currentUserKey}-${currentUserKey}-${cardUserKey}`
+              );
+            }
           }}
           className="rounded bg-[#00B24F] text-white px-2 py-1 text-sm"
         >
