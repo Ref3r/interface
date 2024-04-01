@@ -3,7 +3,9 @@ import { Query, Client, Account, ID, Databases } from "appwrite";
 
 const appwriteClient = new Client();
 
-appwriteClient.setEndpoint(conf.appwriteUrl).setProject(conf.appwriteProjectId);
+export const appwriteApi = appwriteClient
+  .setEndpoint(conf.appwriteUrl)
+  .setProject(conf.appwriteProjectId);
 
 export const account = new Account(appwriteClient);
 
@@ -12,7 +14,8 @@ const database = new Databases(appwriteClient);
 export class AppwriteService {
   // creating user
   async createUserAccount(key: string) {
-    const email = key + "@ref.com";
+    console.log(key);
+    const email = key;
     const password = key;
     try {
       const userAccount = await account.create(ID.unique(), email, password);
@@ -27,7 +30,7 @@ export class AppwriteService {
   }
 
   async login(key: string) {
-    const email = key + "@ref.com";
+    const email = key;
     const password = key;
     try {
       return await account.createEmailSession(email, password);
@@ -77,6 +80,19 @@ export class AppwriteService {
     }
   }
 
+  async createChat(message: any) {
+    try {
+      return database.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteChatId,
+        ID.unique(),
+        message
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getBrandData(key: string) {
     try {
       return database.listDocuments(
@@ -95,6 +111,18 @@ export class AppwriteService {
         conf.appwriteDatabaseId,
         conf.appwriteInfluencerId,
         [Query.equal("key", key)]
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getMessages(roomID: string) {
+    try {
+      return database.listDocuments(
+        conf.appwriteDatabaseId,
+        conf.appwriteChatId,
+        [Query.equal("room", roomID)]
       );
     } catch (error) {
       console.log(error);

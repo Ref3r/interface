@@ -226,7 +226,8 @@ const DashHome = () => {
                       image={`Influencer1.svg`}
                       name={e.name}
                       currentUserDocumentId={currentUserDocumentId}
-                      cardDocumentId={e.$collectionId}
+                      cardDocumentId={e.$id}
+                      cardUserKey={e.key}
                     />
                   ))
                 ) : (
