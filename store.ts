@@ -58,7 +58,7 @@ export const useIsInfluencer = create<isInfluencer>((set) => ({
 
 export const useInfluencerData = create<InfluencerData>((set) => ({
   documentId: "",
-  key: "key",
+  key: "",
   name: "",
   bio: "",
   links: "{}",
