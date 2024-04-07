@@ -18,7 +18,7 @@ function Influencers() {
           />
             <input
               type="text"
-              placeholder="Search events"
+              placeholder="Search Influencers"
               className="text-white h-[2.5rem] w-[90%] rounded-full border-white bg-black px-2 outline-none"
             />
           </div>

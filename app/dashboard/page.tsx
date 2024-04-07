@@ -1,6 +1,8 @@
 "use client";
 import appwriteService from "@/appwrite/config";
 import { use, useEffect, useState } from "react";
+
+
 import Image from "next/image";
 import Link from "next/link";
 import BrandSetup1 from "@/components/dashboard/BrandSetup1";
@@ -13,8 +15,10 @@ import {
   usePublicKey,
 } from "@/store";
 
+
 function Dashboard() {
   const key = usePublicKey.getState().publicKey;
+
   const [choose, setChoose] = useState(true);
   const [brand, setBrand] = useState(false);
   const [influencer, setInfluencer] = useState(false);
@@ -176,5 +180,7 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+//  {isUserExist ? <DashboardComponent /> : ""}
 
 //  {isUserExist ? <DashboardComponent /> : ""}

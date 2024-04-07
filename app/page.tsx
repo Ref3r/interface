@@ -7,8 +7,11 @@ import Hero from "@/components/landing/HeroSection";
 import Features from "@/components/landing/FeaturesSection";
 import OfferSection from "@/components/landing/OfferSection";
 import HowItWorks from "@/components/landing/HowItWorks";
+import Footer from "@/components/landing/Footer";
 import appwriteService from "@/appwrite/config";
 import { usePublicKey } from "@/store";
+
+
 export default function Home() {
   
   return (
@@ -35,6 +38,9 @@ export default function Home() {
       </div>
       <div>
         <HowItWorks />
+      </div>
+      <div className="w-full">
+        <Footer />
       </div>
     </main>
   );

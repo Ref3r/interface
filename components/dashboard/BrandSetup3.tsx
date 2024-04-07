@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import DashboardComponent from "./DashboardComponent";
 import Dashboard from "@/app/dashboard/page";
 import { useBrandData } from "@/store";
@@ -73,7 +72,7 @@ function BrandSetup3() {
               />
             </div>
             <button
-              className="bg-[#00B24F] p-4 text-white rounded-2xl md:rounded-lg w-[30%]"
+              className="bg-[#00B24F] px-4 py-2 text-white rounded-xl w-[30%]"
               onClick={() => {
                 updateStore();
                 createBrand();

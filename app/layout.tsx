@@ -1,12 +1,16 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import {
   DynamicContextProvider,
   EthereumWalletConnectors,
+  EthersExtension,
+  ZeroDevSmartWalletConnectors,
+  DynamicWagmiConnector
 } from "../lib/dynamic"
-
 const inter = Inter({ subsets: ["latin"] });
+
 
 export const metadata: Metadata = {
   title: "Ref3R",
@@ -25,10 +29,13 @@ export default function RootLayout({
         <DynamicContextProvider
           settings={{
             environmentId: process.env.DYNAMIC_PROJECT_ID || '',
-            walletConnectors: [EthereumWalletConnectors]
+            walletConnectors: [EthereumWalletConnectors, ZeroDevSmartWalletConnectors],
+            walletConnectorExtensions: [EthersExtension]
           }}
         >
-          {children}
+          <DynamicWagmiConnector>
+            {children}
+          </DynamicWagmiConnector>
         </DynamicContextProvider>
       </body>
     </html>
