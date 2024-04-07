@@ -29,13 +29,16 @@ const DashHome = () => {
   const description = useBrandData((state) => state.description);
   async function updateData(key: string) {
     const userType = await checkUserType(key);
+    console.log(userType)
     if (userType == "brand") {
       setName(useBrandData.getState().name);
+      console.log("name fetched", useBrandData.getState().name);
       setUserDescription(useBrandData.getState().description);
       setCurrentUserDocumentId(useBrandData.getState().documentId);
     }
     if (userType == "influencer") {
       setName(useInfluencerData.getState().name);
+      console.log("name fetched", useInfluencerData.getState().name);
       setUserDescription(useInfluencerData.getState().bio);
       setCurrentUserDocumentId(useInfluencerData.getState().documentId);
     }
