@@ -29,7 +29,7 @@ const DashHome = () => {
   const description = useBrandData((state) => state.description);
   async function updateData(key: string) {
     const userType = await checkUserType(key);
-    console.log(userType)
+    console.log(userType);
     if (userType == "brand") {
       setName(useBrandData.getState().name);
       console.log("name fetched", useBrandData.getState().name);
@@ -207,6 +207,7 @@ const DashHome = () => {
                 allInfluencers.documents.length > 0 ? (
                   allInfluencers.documents.map((e) => (
                     <DashHomeInfuencers
+                      key={e.$id}
                       image={`Influencer1.svg`}
                       name={e.name}
                       currentUserDocumentId={currentUserDocumentId}

@@ -17,88 +17,64 @@ const DashHomeInfuencers = ({
   currentUserDocumentId,
   cardDocumentId,
   cardUserKey,
-}: {
-  image: any;
-  name: string;
-  currentUserDocumentId: string;
-  cardDocumentId: string;
-  cardUserKey: string;
 }) => {
-  //console.log(currentUserDocumentId);
-  //console.log(cardDocumentId);
-  //console.log(name);
-  console.log(cardUserKey);
   const router = useRouter();
-  const [isConnected, setIsconnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const currentUserKey = usePublicKey.getState().publicKey;
-  async function fetchCurrentUserConnections(key: string) {
-    const userType = await checkUserType(key);
-    if (userType == "brand") {
-      const res = await appwriteService.updateBrandConnection(
+
+  useEffect(() => {
+    const fetchConnections = async () => {
+      const userType = await checkUserType(currentUserKey);
+      const connections =
+        userType === "brand"
+          ? useBrandData.getState().connections
+          : useInfluencerData.getState().connections;
+      setIsConnected(connections?.includes(cardUserKey));
+    };
+    fetchConnections();
+  }, [currentUserKey, cardUserKey]);
+
+  const updateConnections = async () => {
+    setIsLoading(true);
+
+    const updateUserConnections = async (documentId, key, otherUserKey) => {
+      const userType = await checkUserType(key);
+      const updateFn =
+        userType === "brand"
+          ? appwriteService.updateBrandConnection
+          : appwriteService.updateInfluencerConnection;
+      await updateFn(
+        documentId,
+        useBrandData.getState().connections + `,${otherUserKey}`
+      );
+    };
+
+    try {
+      await updateUserConnections(
         currentUserDocumentId,
-        useBrandData.getState().connections + `,${cardUserKey}`
+        currentUserKey,
+        cardUserKey
       );
-      console.log(res);
+      await updateUserConnections(cardDocumentId, cardUserKey, currentUserKey);
+      setIsConnected(true);
+    } catch (error) {
+      console.error("Error updating connections:", error);
     }
-    if (userType == "influencer") {
-      const res = await appwriteService.updateInfluencerConnection(
-        currentUserDocumentId,
-        useInfluencerData.getState().connections + `,${cardUserKey}`
-      );
-      console.log(res);
-    }
-  }
-  async function fetchCardUserConnections(key: string) {
-    const userType = await checkUserType(key);
-    if (userType == "brand") {
-      const res = appwriteService.updateBrandConnection(
-        cardDocumentId,
-        useBrandData.getState().connections + `,${currentUserKey}`
-      );
-      console.log(res);
-    }
-    if (userType == "influencer") {
-      const res = appwriteService.updateInfluencerConnection(
-        cardDocumentId,
-        useInfluencerData.getState().connections + `,${currentUserKey}`
-      );
-      console.log(res);
-    }
-  }
-  async function updateConnections() {
-    await fetchCurrentUserConnections(currentUserKey);
-    await fetchCardUserConnections(cardUserKey);
-    //console.log(currentUserConnections);
-    // console.log(cardUserConnections);
-  }
-  //const [currentUserConnections, setCurrentUserConnections] =
-  //  useState<string>();
-  // const [cardUserConnections, setCardUserConnections] = useState<string>();
-  async function fetchConnections(key: string) {
-    const userType = await checkUserType(key);
-    if (userType == "brand") {
-      const connections = useBrandData.getState().connections;
-      console.log(connections);
-      console.log(cardUserKey);
-      if (connections?.includes(cardUserKey)) {
-        setIsconnected(true);
-      }
-    }
-    if (userType == "influencer") {
-      const connections = useInfluencerData.getState().connections;
-      console.log(connections);
-      console.log(cardUserKey);
-      if (connections?.includes(cardUserKey)) {
-        console.log("user connection status", isConnected);
-        setIsconnected(true);
-      }
-    }
-  }
-  fetchConnections(currentUserKey);
+
+    setIsLoading(false);
+  };
+
+  const handleMessageClick = () => {
+    const chatUrl = useIsInfluencer.getState().isInfluencer
+      ? `/chat/${currentUserKey}-${cardUserKey}-${currentUserKey}`
+      : `/chat/${currentUserKey}-${currentUserKey}-${cardUserKey}`;
+    router.push(chatUrl);
+  };
+
   return (
     <div className="w-[12%] bg-[#27292DCC] p-2 rounded-xl flex flex-col justify-center text-center items-center gap-4 min-h-[220px]">
       <Image
-        // src={`/${image}.svg`}
         src={image}
         width="120"
         height="100"
@@ -108,31 +84,18 @@ const DashHomeInfuencers = ({
       <p className="text-white text-lg font-medium">{name}</p>
       {isConnected ? (
         <button
-          onClick={() => {
-            if (useIsInfluencer.getState().isInfluencer) {
-              router.push(
-                `/chat/${currentUserKey}-${cardUserKey}-${currentUserKey}`
-              );
-              //  router.push("/chat/"+cardUserKey+currentUserKey);
-            }
-            if (!useIsInfluencer.getState().isInfluencer) {
-              router.push(
-                `/chat/${currentUserKey}-${currentUserKey}-${cardUserKey}`
-              );
-            }
-          }}
+          onClick={handleMessageClick}
           className="rounded bg-[#00B24F] text-white px-2 py-1 text-sm"
         >
           Message
         </button>
       ) : (
         <button
-          onClick={() => {
-            updateConnections();
-          }}
+          onClick={updateConnections}
           className="rounded bg-[#00B24F] text-white px-2 py-1 text-sm"
+          disabled={isLoading}
         >
-          Connect
+          {isLoading ? "..." : "Connect"}
         </button>
       )}
     </div>

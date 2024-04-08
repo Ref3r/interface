@@ -12,6 +12,7 @@ import {
   useInfluencerData,
   useIsInfluencer,
 } from "@/store";
+import { useUserActions } from "@/hooks/useUserActions";
 
 function LandingNavbar() {
   const [Toggle, setToggle] = useState(true);
@@ -19,107 +20,7 @@ function LandingNavbar() {
   const router = useRouter();
   const { user, isAuthenticated, setShowAuthFlow, handleLogOut } =
     useDynamicContext();
-  // const isUserLoggedIn = useIsLoggedIn()
-  // console.log(isUserLoggedIn)
-  async function createUser(key: string) {
-    const user = await appwriteService.createUserAccount(key);
-  }
-  async function checkUserExist(key: string) {
-    console.log("checking if user exists otherwise registering new user");
-    try {
-      //await appwriteService.login(key);
-      const data = await appwriteService.getCurrentUser().then();
-      console.log(data);
-      return data;
-    } catch (error) {
-      console.log("error logong in ", error);
-    }
-    try {
-      const data = await createUser(key);
-      console.log(data);
-      await appwriteService.login(key);
-      return data;
-    } catch (error) {
-      console.log("error creating user", error);
-    }
-  }
-
-  async function getInfluencerData(key: string) {
-    const data = await appwriteService.getInfluencerData(key);
-    return data;
-  }
-
-  async function getBrandData(key: string) {
-    const data = await appwriteService.getBrandData(key);
-    return data;
-  }
-
-  async function checkUserSetup(key: string) {
-    const brandData = await appwriteService.getBrandData(key);
-    if (brandData.total) {
-      console.log("brand data", brandData);
-      useIsInfluencer.setState({
-        isInfluencer: false,
-      });
-      useBrandData.setState({
-        documentId: brandData.documents[0].$id,
-        key: brandData.documents[0].key,
-        name: brandData.documents[0].name,
-        description: brandData.documents[0].description,
-        website: brandData.documents[0].website,
-        address: brandData.documents[0].address,
-        business_reg_code: brandData.documents[0].business_reg_code,
-        links: brandData.documents[0].links,
-        ecommerce_platform: brandData.documents[0].ecommerce_platform,
-        api_key: brandData.documents[0].api_key,
-        industry: brandData.documents[0].industry,
-        profile_img: brandData.documents[0].profile_img,
-        connections: brandData.documents[0].connections,
-      });
-    }
-
-    const influencerData = await getInfluencerData(key);
-    if (influencerData.total) {
-      console.log(influencerData);
-      useIsInfluencer.setState({
-        isInfluencer: true,
-      });
-      useInfluencerData.setState({
-        documentId: influencerData.documents[0].$id,
-        key: influencerData.documents[0].key,
-        name: influencerData.documents[0].name,
-        bio: influencerData.documents[0].bio,
-        links: influencerData.documents[0].links,
-        niche: influencerData.documents[0].niche,
-        main_platform: influencerData.documents[0].main_platform,
-        follower_count: influencerData.documents[0].follower_count,
-        connections: influencerData.documents[0].connections,
-      });
-    }
-
-    if (brandData.total || influencerData.total) {
-      return true;
-    }
-  }
-  // if (isAuthenticated) {
-  //   console.log("user payload data", user?.email);
-
-  //   usePublicKey.setState({ publicKey: user?.email });
-  //   const key = usePublicKey.getState().publicKey;
-  //   console.log(key);
-  //   const userCheck = async () => {
-  //     console.log("key being added", key);
-  //     const user = await checkUserExist(key);
-  //     console.log(user);
-  //     if (user) {
-  //       router.push("/dashboard");
-  //     }
-  //   };
-  //   userCheck();
-  // }
-  const handleClick = () => {
-    setToggle(!Toggle);
-  };
+  const { checkUserExist, checkUserSetup } = useUserActions();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -147,6 +48,11 @@ function LandingNavbar() {
   const myLoader = () => {
     return `https://api.dicebear.com/7.x/initials/svg?seed=${user?.firstName}`;
   };
+
+  const handleClick = () => {
+    setToggle(!Toggle);
+  };
+
   return (
     <div className="w-full flex justify-center items-center">
       <nav className="z-10 md:bg-[#4A4A4A] mt-2 md:mt-10 w-[90%] rounded-md items-center justify-between text-[0.75rem] lg:text-sm font-semibold text-white flex">

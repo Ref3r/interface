@@ -1,122 +1,40 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { appwriteApi } from "@/appwrite/config";
-import appwriteService from "@/appwrite/config";
-import conf from "@/conf/config";
-//import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Chat.css";
+import { useChat } from "../../hooks/useChat";
 
 export default function Chat(room: any) {
-  const [nameID, setNameID] = useState<string>();
-  const [roomID, setRoomID] = useState<string>();
-  const [messages, setMessages] = useState<any>();
-  const [currMessage, setCurrMessage] = useState<string>();
-  const rounter = useRouter();
-
-  useEffect(() => {
-    const result = room.room.replace(/%40/g, "@").split("-");
-    const key = result[0];
-    async function updateData() {
-      console.log(key);
-      setRoomID(result[1] + result[2]);
-      console.log(result[1] + "-" + result[2]);
-      if (result[0] === result[2]) {
-        const data = await appwriteService.getInfluencerData(key);
-        setNameID(data.documents[0].name);
-        console.log(data.documents[0].name);
-      } else if (result[0] === result[1]) {
-        const data = await appwriteService.getBrandData(key);
-        setNameID(data.documents[0].name);
-        console.log(data);
-      }
-      const data = await appwriteService.getCurrentUser().then();
-      console.log(data);
-    }
-
-    updateData();
-    //console.log(appwriteApi);
-
-    async function getMessages() {
-      const prevMessages = await appwriteService.getMessages(
-        result[1] + result[2]
-      );
-      //  console.log(prevMessages);
-      setMessages(prevMessages.documents);
-    }
-    getMessages();
-  }, [room.room]); // Dependency array ensures useEffect runs only when room.room changes
-
-  async function sendMessage(e: any) {
-    e.preventDefault();
-    const message = e.target.message.value;
-    const name = nameID;
-    const chatObj = {
-      name: name,
-      room: roomID,
-      messages: message,
-    };
-    setCurrMessage("");
-    const res = await appwriteService.createChat(chatObj);
-    console.log(res);
-  }
-
-  useEffect(() => {
-    appwriteApi.subscribe(
-      `databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteChatId}.documents`,
-      (response) => {
-        if (
-          response.events.includes(
-            "databases.*.collections.*.documents.*.create"
-          )
-        ) {
-          setMessages((prev) => [...prev, response.payload]);
-        }
-      }
-    );
-
-    // Cleanup function to unsubscribe when the component unmounts
-  }, []);
+  const { nameID, messages, currMessage, setCurrMessage, sendMessage, router } =
+    useChat(room.room);
 
   return (
     <div className="chat-container">
       <div className="chat-header">
         <div className="title">Let's Chat</div>
-        <button
-          onClick={() => {
-            rounter.push("/");
-          }}
-          className="leave"
-        >
+        <button onClick={() => router.push("/")} className="leave">
           Leave Chat
         </button>
       </div>
 
       <div className="chat-body">
-        {messages?.map((message) => {
-          return (
-            <div>
-              <span className="name">{message.name}:</span>
-              {message.messages}
-            </div>
-          );
-        })}
+        {messages?.map((message, index) => (
+          <div key={index}>
+            <span className="name">{message.name}:</span>
+            {message.messages}
+          </div>
+        ))}
       </div>
 
       <div className="chat-message">
         <form onSubmit={sendMessage}>
           <input
             value={currMessage}
-            onChange={(e) => {
-              setCurrMessage(e.target.value);
-            }}
+            onChange={(e) => setCurrMessage(e.target.value)}
             type="text"
             name="message"
             placeholder="Type a message..."
           />
           <button className="send-message">
             send
-            <button />
             <svg
               className="arrow"
               width="24"
