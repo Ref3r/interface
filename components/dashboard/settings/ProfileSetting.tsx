@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-
+import { useBrandData } from "@/store";
+import { updateBrandData } from "@/appwrite/utils";
 function ProfileSetting() {
+  const [newName, setNewName] = useState(useBrandData.getState().name);
+  const [newDesc, setNewDesc] = useState(useBrandData.getState().description);
+  const [newWebsite, setNewWebsite] = useState(useBrandData.getState().website);
+  const [newProfileImg, setNewProfileImg] = useState(
+    useBrandData.getState().profile_img
+  );
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-8">
@@ -11,7 +19,12 @@ function ProfileSetting() {
             type="text"
             id="event-name"
             placeholder="Name"
+            value={newName}
             className="bg-[#27292D] text-lg rounded-2xl p-4 text-white  w-[50%]"
+            onChange={(e) => {
+              setNewName(e.target.value);
+              console.log(newName);
+            }}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -22,6 +35,10 @@ function ProfileSetting() {
             placeholder="Description..."
             rows={4}
             className="bg-[#27292D] rounded-2xl p-4 text-white resize-none w-[50%]"
+            value={newDesc}
+            onChange={(e) => {
+              setNewDesc(e.target.value);
+            }}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -31,6 +48,10 @@ function ProfileSetting() {
             id="event-name"
             placeholder="Link"
             className="bg-[#27292D] text-lg rounded-2xl p-4 text-white  w-[50%]"
+            value={newWebsite}
+            onChange={(e) => {
+              setNewWebsite(e.target.value);
+            }}
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -91,7 +112,17 @@ function ProfileSetting() {
       </div>
 
       <div className="gap-4 flex ">
-        <button className="bg-[#00B24F] p-4 text-xl text-white rounded-xl min-w-[15%]">
+        <button
+          className="bg-[#00B24F] p-4 text-xl text-white rounded-xl min-w-[15%]"
+          onClick={() => {
+            useBrandData.setState({
+              name: newName,
+              description: newDesc,
+              website: newWebsite,
+            });
+            updateBrandData();
+          }}
+        >
           Save Changes
         </button>
       </div>

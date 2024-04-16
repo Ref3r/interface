@@ -184,6 +184,33 @@ export class AppwriteService {
       console.error(e);
     }
   }
+
+  async updateBrandData(collectionID: string, name: string,description:string,website:string,profile_img:string) {
+    try {
+      return database.updateDocument(
+        conf.appwriteDatabaseId,
+
+        conf.appwriteBrandId,
+        collectionID,
+        { name,description,website,profile_img }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  //temp
+  async createBrande(brandData: any) {
+    try {
+      return database.createDocument(
+        conf.appwriteDatabaseId,
+        conf.appwriteBrandId,
+        ID.unique(),
+        brandData
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 const appwriteService = new AppwriteService();
