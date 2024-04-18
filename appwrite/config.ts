@@ -1,5 +1,5 @@
 import conf from "@/conf/config";
-import { Query, Client, Account, ID, Databases } from "appwrite";
+import { Query, Client, Account, ID, Databases, Storage } from "appwrite";
 
 const appwriteClient = new Client();
 
@@ -10,7 +10,8 @@ export const appwriteApi = appwriteClient
 export const account = new Account(appwriteClient);
 
 const database = new Databases(appwriteClient);
-
+const storage = new Storage(appwriteClient);
+const bucketId = conf.appwriteBucketId;
 export class AppwriteService {
   // creating user
   async createUserAccount(key: string) {
@@ -185,14 +186,20 @@ export class AppwriteService {
     }
   }
 
-  async updateBrandData(collectionID: string, name: string,description:string,website:string,profile_img:string) {
+  async updateBrandData(
+    collectionID: string,
+    name: string,
+    description: string,
+    website: string,
+    profile_img: string
+  ) {
     try {
       return database.updateDocument(
         conf.appwriteDatabaseId,
 
         conf.appwriteBrandId,
         collectionID,
-        { name,description,website,profile_img }
+        { name, description, website, profile_img }
       );
     } catch (e) {
       console.error(e);
@@ -207,6 +214,14 @@ export class AppwriteService {
         ID.unique(),
         brandData
       );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async uploadProilePic(file: any) {
+    try {
+      return storage.createFile(bucketId, ID.unique(), file);
     } catch (error) {
       console.log(error);
     }

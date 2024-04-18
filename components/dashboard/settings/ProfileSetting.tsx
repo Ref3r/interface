@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useBrandData } from "@/store";
 import { updateBrandData } from "@/appwrite/utils";
+import appwriteService from "@/appwrite/config";
 function ProfileSetting() {
   const [newName, setNewName] = useState(useBrandData.getState().name);
   const [newDesc, setNewDesc] = useState(useBrandData.getState().description);
@@ -56,6 +57,21 @@ function ProfileSetting() {
         </div>
         <div className="flex flex-col gap-2">
           <p className="text-3xl text-white font-bold">Brand Logo</p>
+          <input
+            onChange={async (event) => {
+              const file = event.target.files[0];
+
+              try {
+                const res = await appwriteService.uploadProilePic(file);
+                console.log(res);
+              } catch (error) {
+                console.error("Error uploading profile picture:", error);
+              }
+            }}
+            type="file"
+            name=""
+            id=""
+          />
           <Image
             src="/LogoUpload.svg"
             width="252"
