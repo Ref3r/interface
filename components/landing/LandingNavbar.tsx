@@ -20,7 +20,149 @@ function LandingNavbar() {
   const router = useRouter();
   const { user, isAuthenticated, setShowAuthFlow, handleLogOut } =
     useDynamicContext();
-  const { checkUserExist, checkUserSetup } = useUserActions();
+  // const isUserLoggedIn = useIsLoggedIn()
+  // const userAuthenticated = useIsAuthenticated()
+  // console.log("is user authenticated", userAuthenticated)
+  // console.log(isUserLoggedIn)
+  async function createUser(key: string) {
+    const user = await appwriteService.createUserAccount(key);
+  }
+  async function checkUserExist(key: string) {
+    console.log("checking if user exists otherwise registering new user");
+    try {
+      //await appwriteService.login(key);
+      const data = await appwriteService.getCurrentUser().then();
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log("error logong in ", error);
+    }
+    try {
+      const data = await createUser(key);
+      console.log(data);
+      await appwriteService.login(key);
+      return data;
+    } catch (error) {
+      console.log("error creating user", error);
+    }
+  }
+
+  async function getInfluencerData(key: string) {
+    const data = await appwriteService.getInfluencerData(key);
+    return data;
+  }
+
+  async function getBrandData(key: string) {
+    const data = await appwriteService.getBrandData(key);
+    return data;
+  }
+
+  async function checkUserSetup(key: string) {
+    const brandData = await appwriteService.getBrandData(key);
+    if (brandData.total) {
+      console.log("brand data", brandData);
+      useIsInfluencer.setState({
+        isInfluencer: false,
+      });
+      useBrandData.setState({
+        documentId: brandData.documents[0].$id,
+        key: brandData.documents[0].key,
+        name: brandData.documents[0].name,
+        description: brandData.documents[0].description,
+        website: brandData.documents[0].website,
+        address: brandData.documents[0].address,
+        business_reg_code: brandData.documents[0].business_reg_code,
+        links: brandData.documents[0].links,
+        ecommerce_platform: brandData.documents[0].ecommerce_platform,
+        api_key: brandData.documents[0].api_key,
+        industry: brandData.documents[0].industry,
+        profile_img: brandData.documents[0].profile_img,
+        connections: brandData.documents[0].connections,
+      });
+    }
+
+    const influencerData = await getInfluencerData(key);
+    if (influencerData.total) {
+      console.log(influencerData);
+      useIsInfluencer.setState({
+        isInfluencer: true,
+      });
+      useInfluencerData.setState({
+        documentId: influencerData.documents[0].$id,
+        key: influencerData.documents[0].key,
+        name: influencerData.documents[0].name,
+        bio: influencerData.documents[0].bio,
+        links: influencerData.documents[0].links,
+        niche: influencerData.documents[0].niche,
+        main_platform: influencerData.documents[0].main_platform,
+        follower_count: influencerData.documents[0].follower_count,
+        connections: influencerData.documents[0].connections,
+      });
+    }
+
+    if (brandData.total || influencerData.total) {
+      return true;
+    }
+  }
+  // if (isAuthenticated) {
+  //   console.log("user payload data", user?.email);
+
+  //   usePublicKey.setState({ publicKey: user?.email });
+  //   const key = usePublicKey.getState().publicKey;
+  //   console.log(key);
+  //   const userCheck = async () => {
+  //     console.log("key being added", key);
+  //     const user = await checkUserExist(key);
+  //     console.log(user);
+  //     if (user) {
+  //       router.push("/dashboard");
+  //     }
+  //   };
+  //   userCheck();
+  // }
+
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("user payload data", user?.email);
+
+      usePublicKey.setState({ publicKey: user?.email });
+      const key = usePublicKey.getState().publicKey;
+      console.log(key);
+
+      const userCheck = async () => {
+        console.log("key being added", key);
+        const user = await checkUserExist(key);
+        const setup = await checkUserSetup(key);
+        console.log(user);
+        console.log(setup);
+        if (user) {
+          router.push("/dashboard");
+        }
+      };
+
+      userCheck();
+    }
+  }, [isAuthenticated]); // Only re-run when isAuthenticated changes
+
+  //const key = "0x953ed43e99938fDD2B0c91E4521Cccc2762aF70A";
+  //const key = usePublicKey.getState().publicKey;
+  // function updatePublicKey(key: string) {
+  //   usePublicKey.setState({ publicKey: key });
+  // }
+  // updatePublicKey("0x495yg3ed43e99938fDD2B0c91E4521Cccc2762aF70A");
+
+  // useEffect(() => {
+  //   const userCheck = async () => {
+  //     const user = await checkUserExist();
+  //     console.log(user);
+  //     if (user) {
+  //       // router.push("/dashboard");
+  //     }
+  //   };
+  //   userCheck();
+  // }, []);
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -221,12 +363,14 @@ function LandingNavbar() {
                 </div>
               </div>
             ) : (
-              <button
-                className="border px-6 py-2 rounded hover:bg-white hover:text-black"
-                onClick={() => setShowAuthFlow(true)}
-              >
-                Login
-              </button>
+              <Link href="/dashboard">
+                <button
+                  className="border px-6 py-2 rounded hover:bg-white hover:text-black"
+                  onClick={() => setShowAuthFlow(true)}
+                >
+                  Launch Dapp
+                </button>
+              </Link>
             )}
           </div>
 
@@ -250,15 +394,15 @@ function LandingNavbar() {
             />
           )}
 
-          <div
-            className={`delay-300 md:hidden text-center flex justify-center items-center gap-8 py-12 h-screen bg-black/70 w-full fixed top-[55px] text-white flex-col ${
-              Toggle ? "right-[100%]" : "left-[100%]}"
-            }`}
-          >
-            <div className="flex flex-col gap-[2rem]  w-[80%]">
-              <Link href="/">
-                <p className="hoverUnderline hover:text-[#00B24F]">Home</p>
-              </Link>
+        <div
+          className={`delay-300 md:hidden text-center flex justify-center items-center gap-8 py-12 h-screen bg-black/70 w-full fixed top-[55px] text-white flex-col ${
+            Toggle ? "right-[100%]" : "left-[100%]}"
+          }`}
+        >
+          <div className="flex flex-col gap-[2rem]  w-[80%]">
+            <Link href="/">
+              <p className="hoverUnderline hover:text-[#00B24F]">Home</p>
+            </Link>
 
               <Link
                 // target="_blank"
@@ -295,8 +439,10 @@ function LandingNavbar() {
             <div className="md:mr-4">icon</div>
           </div>
         </div>
-      </nav>
-    </div>
+      </nav >
+    </div >
+
+           
   );
 }
 

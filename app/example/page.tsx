@@ -1,4 +1,5 @@
 "use client"
+import { SendTransactionSection } from "@/components/dashboard/TransactionTest"
 import { useDynamicContext } from "@/lib/dynamic"
 import { useBalance } from "wagmi"
 
@@ -16,6 +17,7 @@ export default function Home() {
         <div>
             <h1>This is example page</h1>
             <button onClick={signMessage} className="border border-black px-4 py-2 rounded">Sign Message</button>
+            <SendTransactionSection />
         </div>
     )
 }

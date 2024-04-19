@@ -3,6 +3,7 @@ import { useState } from "react";
 import ActiveCampaigns from "./ActiveCampaigns";
 import PastCampaigns from "./PastCampaigns";
 import CreateCampaign from "./CreateCampaign";
+import ViewCampaign from "./ViewCampaign";
 
 const Campaigns = () => {
   const [choose, setChoose] = useState(false);
@@ -56,6 +57,11 @@ const Campaigns = () => {
       </div>
 
       {whitelist ? "" : <CreateCampaign />}
+
+      
+
+      {/* comment out line 62 to see View Campaign & Chat UI */}
+      {/* <ViewCampaign /> */}
     </>
   );
 };

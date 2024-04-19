@@ -4,6 +4,8 @@ import Image from "next/image";
 import DashboardComponent from "./DashboardComponent";
 import { useInfluencerData } from "@/store";
 import { createInfluencer } from "../../appwrite/utils";
+import InfluencerDashComponent from "./InfluencerDashboard/InfluencerDashComponent";
+
 function InfluencerSetup3() {
   const [choose, setChoose] = useState(true);
   const [niche, setNiche] = useState<string>();
@@ -90,7 +92,7 @@ function InfluencerSetup3() {
           />
         </div>
       </div>
-      {choose ? "" : <DashboardComponent />}
+      {choose ? "" : <InfluencerDashComponent />}
     </>
   );
 }

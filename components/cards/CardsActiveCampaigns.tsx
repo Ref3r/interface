@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+import { useState } from "react";
+import ViewCampaign from "../dashboard/ViewCampaign";
+import WhitelistInfluencer from "../dashboard/WhitelistInfluencer";
 
 const CardsActiveCampaigns = ({
   campaign,
@@ -13,6 +16,9 @@ const CardsActiveCampaigns = ({
   balance: any;
   total: any;
 }) => {
+  const [view, setView] = useState(true);
+  const [whitelist, setWhitelist] = useState(true);
+
   return (
     <div className="w-full">
       <div className="w-full flex flex-col gap-2 p-4 text-white bg-[#00B24F] rounded-t-xl">
@@ -45,10 +51,27 @@ const CardsActiveCampaigns = ({
             </p>
           </div>
         </div>
-        <div>
-          <p className="text-[#27E0A6]">View Campaign</p>
+        <div className="flex items-center gap-6">
+          <button
+            className={`text-[#27E0A6]`}
+            onClick={() => {
+              setWhitelist(false);
+            }}
+          >
+            Whitelist Influencer
+          </button>
+          <button
+            className={`text-[#27E0A6]`}
+            onClick={() => {
+              setView(false);
+            }}
+          >
+            View Campaign
+          </button>
         </div>
       </div>
+      {view ? "" : <ViewCampaign />}
+      {whitelist ? "" : <WhitelistInfluencer />}
     </div>
   );
 };
