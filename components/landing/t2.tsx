@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useDynamicContext } from "@/lib/dynamic";
+import { useDynamicContext } from "@/lib/dynamic"
 import { useIsAuthenticated } from "@/hooks/test";
 import { useRouter } from "next/navigation";
 import appwriteService from "@/appwrite/config";
+
 
 import {
   useBrandData,
@@ -22,8 +23,8 @@ function LandingNavbar() {
   const { user, isAuthenticated, setShowAuthFlow, handleLogOut } =
     useDynamicContext();
   const { checkUserExist, checkUserSetup } = useUserActions();
-  const userAuthenticated = useIsAuthenticated();
-  console.log("is user authenticated", userAuthenticated);
+  const userAuthenticated = useIsAuthenticated()
+  console.log("is user authenticated", userAuthenticated)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -228,7 +229,7 @@ function LandingNavbar() {
                 className="border px-6 py-2 rounded hover:bg-white hover:text-black"
                 onClick={() => setShowAuthFlow(true)}
               >
-                Launch Dapp
+                Login
               </button>
             )}
           </div>

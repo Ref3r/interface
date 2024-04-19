@@ -2,58 +2,23 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useDynamicContext } from "@/lib/dynamic";
+import { useDynamicContext } from "@/lib/dynamic"
 import { useIsAuthenticated } from "@/hooks/test";
-import { useRouter } from "next/navigation";
-import appwriteService from "@/appwrite/config";
-
-import {
-  useBrandData,
-  usePublicKey,
-  useInfluencerData,
-  useIsInfluencer,
-} from "@/store";
-import { useUserActions } from "@/hooks/useUserActions";
-
 function LandingNavbar() {
   const [Toggle, setToggle] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
   const { user, isAuthenticated, setShowAuthFlow, handleLogOut } =
     useDynamicContext();
-  const { checkUserExist, checkUserSetup } = useUserActions();
-  const userAuthenticated = useIsAuthenticated();
-  console.log("is user authenticated", userAuthenticated);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      console.log("user payload data", user?.email);
-
-      usePublicKey.setState({ publicKey: user?.email });
-      const key = usePublicKey.getState().publicKey;
-      console.log(key);
-
-      const userCheck = async () => {
-        console.log("key being added", key);
-        const user = await checkUserExist(key);
-        const setup = await checkUserSetup(key);
-        console.log(user);
-        console.log(setup);
-        if (user) {
-          router.push("/dashboard");
-        }
-      };
-
-      userCheck();
-    }
-  }, [isAuthenticated]);
-
-  const myLoader = () => {
-    return `https://api.dicebear.com/7.x/initials/svg?seed=${user?.firstName}`;
-  };
-
+  // const isUserLoggedIn = useIsLoggedIn()
+  const userAuthenticated = useIsAuthenticated()
+  console.log("is user authenticated", userAuthenticated)
+  // console.log(isUserLoggedIn)
+  if (isAuthenticated) console.log("user payload data", user);
   const handleClick = () => {
     setToggle(!Toggle);
+  };
+  const myLoader = () => {
+    return `https://api.dicebear.com/7.x/initials/svg?seed=${user?.firstName}`;
   };
 
   return (
@@ -224,12 +189,14 @@ function LandingNavbar() {
                 </div>
               </div>
             ) : (
-              <button
-                className="border px-6 py-2 rounded hover:bg-white hover:text-black"
-                onClick={() => setShowAuthFlow(true)}
-              >
-                Launch Dapp
-              </button>
+              <Link href="/dashboard">
+                <button
+                  className="border px-6 py-2 rounded hover:bg-white hover:text-black"
+                  onClick={() => setShowAuthFlow(true)}
+                >
+                  Launch Dapp
+                </button>
+              </Link>
             )}
           </div>
 
@@ -254,9 +221,8 @@ function LandingNavbar() {
           )}
 
           <div
-            className={`delay-300 md:hidden text-center flex justify-center items-center gap-8 py-12 h-screen bg-black/70 w-full fixed top-[55px] text-white flex-col ${
-              Toggle ? "right-[100%]" : "left-[100%]}"
-            }`}
+            className={`delay-300 md:hidden text-center flex justify-center items-center gap-8 py-12 h-screen bg-black/70 w-full fixed top-[55px] text-white flex-col ${Toggle ? "right-[100%]" : "left-[100%]}"
+              }`}
           >
             <div className="flex flex-col gap-[2rem]  w-[80%]">
               <Link href="/">
